@@ -1,0 +1,142 @@
+openapi: 3.0.0
+info:
+  title: Karmivo API
+  description: API documentation for Karmivo backend.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local server
+  - url: https://karmivo-backend.onrender.com/api/v1
+    description: Production server
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                roleName:
+                  type: string
+                  example: CUSTOMER
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+  /auth/login:
+    post:
+      summary: Login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+  /auth/otp/request:
+    post:
+      summary: Request OTP
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: OTP sent
+  /auth/otp/verify:
+    post:
+      summary: Verify OTP and Login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                email:
+                  type: string
+                otp:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+  /orders:
+    post:
+      summary: Create an order
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                serviceId:
+                  type: string
+                scheduledDate:
+                  type: string
+                  format: date-time
+                paymentMethod:
+                  type: string
+                serviceAddress:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    location:
+                      type: object
+                      properties:
+                        coordinates:
+                          type: array
+                          items:
+                            type: number
+      responses:
+        '201':
+          description: Order created
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

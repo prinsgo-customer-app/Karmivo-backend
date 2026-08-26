@@ -1,0 +1,43 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node src/scripts/seedRoles.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prinsgo-customer-app/Karmivo-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/prinsgo-customer-app/Karmivo-backend/issues"
+  },
+  "homepage": "https://github.com/prinsgo-customer-app/Karmivo-backend#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "joi": "^18.2.5",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.4",
+    "morgan": "^1.11.0",
+    "multer": "^2.2.0",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}
