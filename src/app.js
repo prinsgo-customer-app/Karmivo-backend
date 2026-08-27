@@ -15,6 +15,18 @@ const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const interactionRoutes = require('./routes/interactionRoutes');
+const configRoutes = require('./routes/configRoutes');
+const homeRoutes = require('./routes/homeRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const addressRoutes = require('./routes/addressRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const workerRoutes = require('./routes/workerRoutes');
+const walletRoutes = require('./routes/walletRoutes');
+const referralRoutes = require('./routes/referralRoutes');
+const supportRoutes = require('./routes/supportRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const { getBanners } = require('./controllers/homeController');
 
 const app = express();
 
@@ -39,9 +51,21 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/v1/config', configRoutes);
+app.use('/api/v1/home', homeRoutes);
+app.get('/api/v1/banners', getBanners);
+app.use('/api/v1/worker', workerRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/support', supportRoutes);
+app.use('/api/v1/referral', referralRoutes);
+app.use('/api/v1/wallet', walletRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/addresses', addressRoutes);
+app.use('/api/v1/profile', profileRoutes);
+app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/services', serviceRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/admin', adminRoutes);
