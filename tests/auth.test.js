@@ -9,9 +9,12 @@ describe('Auth API (mocked DB)', () => {
   beforeAll(() => {
     // Mock mongoose methods so it doesn't hang connecting to a real DB
     jest.spyOn(Role, 'findOne').mockImplementation((query) => {
-      if (query.name === 'CUSTOMER') return Promise.resolve({ _id: '123', name: 'CUSTOMER' });
       if (query.name === 'ADMIN') return Promise.resolve({ _id: '124', name: 'ADMIN' });
-      return Promise.resolve(null); // Invalid role
+      return Promise.resolve(null); // Simulate missing roles (including CUSTOMER) in the DB
+    });
+
+    jest.spyOn(Role, 'create').mockImplementation((data) => {
+      return Promise.resolve({ _id: '123', name: data.name }); // Mock dynamic role creation
     });
 
     // Quick exit for successful role lookup by pretending the user already exists (409)

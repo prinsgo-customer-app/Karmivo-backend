@@ -76,9 +76,14 @@ const register = async (req, res, next) => {
       parsedRole = 'CUSTOMER';
     }
 
-    const role = await Role.findOne({ name: parsedRole });
+    let role = await Role.findOne({ name: parsedRole });
     if (!role) {
-      return errorResponse(res, 400, 'Invalid role', 'VALIDATION_ERROR');
+      if (parsedRole === 'CUSTOMER' || parsedRole === 'PARTNER') {
+        // Automatically create missing essential roles dynamically
+        role = await Role.create({ name: parsedRole, description: `Default ${parsedRole} role` });
+      } else {
+        return errorResponse(res, 400, 'Invalid role', 'VALIDATION_ERROR');
+      }
     }
 
     let existingUser = null;
