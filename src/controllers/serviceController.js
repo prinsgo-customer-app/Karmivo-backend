@@ -11,6 +11,19 @@ const getCategories = async (req, res, next) => {
   }
 };
 
+const getServiceById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const service = await Service.findById(id).populate('category');
+    if (!service) {
+        return errorResponse(res, 404, 'Service not found');
+    }
+    return successResponse(res, 200, 'Service retrieved', { service });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getServices = async (req, res, next) => {
   try {
     const { categoryId } = req.query;
@@ -46,6 +59,7 @@ const createService = async (req, res, next) => {
 module.exports = {
   getCategories,
   getServices,
+  getServiceById,
   createCategory,
   createService,
 };

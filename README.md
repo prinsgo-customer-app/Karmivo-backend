@@ -23,8 +23,13 @@ Swagger documentation is available at `/api-docs` when running the application.
 
 ## Deployment to Render
 
-- Ensure `PORT`, `MONGO_URI`, and `NODE_ENV=production` are set.
-- Start Command: `npm start`
+To successfully deploy to Render, you must configure the following Environment Variables in the Render dashboard:
+- `PORT`: (e.g., 10000, or let Render assign one)
+- `MONGO_URI`: Your production MongoDB connection string.
+- `JWT_SECRET`: The secret key for signing JWTs.
+- `NODE_ENV=production`
+
+Start Command: `npm start`
 
 ## Core Modules
 

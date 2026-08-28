@@ -23,19 +23,17 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: [
-      'REQUESTED', 'SEARCHING', 'ASSIGNED', 'ACCEPTED', 'REJECTED',
-      'ARRIVING', 'STARTED', 'IN_PROGRESS', 'COMPLETED', 'CANCEL_REQUESTED',
-      'CANCELLED', 'PAYMENT_PENDING', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED',
-      'REFUND_PENDING', 'REFUNDED', 'DISPUTED', 'FAILED'
+      'pending', 'searching', 'accepted', 'arriving', 'picked_up', 'in_progress', 'completed', 'cancelled'
     ],
-    default: 'REQUESTED',
+    default: 'pending',
   },
-  serviceAddress: {
-    address: String,
-    location: {
-      type: { type: String, enum: ['Point'], default: 'Point' },
-      coordinates: { type: [Number], required: true },
-    },
+  pickupAddress: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address',
+  },
+  destinationAddress: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address',
   },
   scheduledDate: Date,
   amounts: {
@@ -54,6 +52,5 @@ const orderSchema = new mongoose.Schema({
   paymentMethod: String,
 }, { timestamps: true });
 
-orderSchema.index({ 'serviceAddress.location': '2dsphere' });
 
 module.exports = mongoose.model('Order', orderSchema);
