@@ -69,7 +69,9 @@ const register = async (req, res, next) => {
       return errorResponse(res, 400, 'Password is required', 'VALIDATION_ERROR');
     }
 
-    const role = await Role.findOne({ name: roleName.toUpperCase() });
+    const requestedRole = roleName ? roleName.toUpperCase() : 'CUSTOMER';
+
+    const role = await Role.findOne({ name: requestedRole });
     if (!role) {
       return errorResponse(res, 400, 'Invalid role', 'VALIDATION_ERROR');
     }
