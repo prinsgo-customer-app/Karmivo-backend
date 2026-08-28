@@ -69,9 +69,14 @@ const register = async (req, res, next) => {
       return errorResponse(res, 400, 'Password is required', 'VALIDATION_ERROR');
     }
 
-    const requestedRole = roleName ? roleName.toUpperCase() : 'CUSTOMER';
+    let inputRole = roleName !== undefined ? roleName : req.body.role;
+    let parsedRole = String(inputRole || '').toUpperCase().trim();
 
-    const role = await Role.findOne({ name: requestedRole });
+    if (!parsedRole || parsedRole === 'UNDEFINED' || parsedRole === 'NULL' || parsedRole === 'USER') {
+      parsedRole = 'CUSTOMER';
+    }
+
+    const role = await Role.findOne({ name: parsedRole });
     if (!role) {
       return errorResponse(res, 400, 'Invalid role', 'VALIDATION_ERROR');
     }
