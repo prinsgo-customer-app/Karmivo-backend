@@ -28,7 +28,7 @@ describe('Auth API (mocked DB)', () => {
     const res = await request(app).post('/api/v1/auth/register').send({});
     expect(res.statusCode).toEqual(400);
     expect(res.body.success).toBe(false);
-    expect(res.body.message).toEqual('Mobile or email is required');
+    expect(res.body.message).toEqual('Phone number is required');
   });
 
   it('should return validation error if password missing in login', async () => {
@@ -83,5 +83,47 @@ describe('Auth API (mocked DB)', () => {
       roleName: 'undefined'
     });
     expect(res.statusCode).toEqual(409);
+  });
+
+  it('should accept phone as an alias for mobile during registration', async () => {
+    const User = require('../src/models/User');
+    const findSpy = jest.spyOn(User, 'findOne').mockImplementationOnce(() => Promise.resolve(null)); // Not exists
+
+    // Mock user creation for this test to bypass actually hitting the DB fully
+    jest.spyOn(User, 'create').mockImplementationOnce(() => Promise.resolve({
+      _id: 'newuser123',
+      mobile: '9876543210',
+      phone: '9876543210',
+    }));
+
+    // Also mock CustomerProfile.create to not fail since CUSTOMER role is assumed
+    const CustomerProfile = require('../src/models/CustomerProfile');
+    jest.spyOn(CustomerProfile, 'create').mockImplementationOnce(() => Promise.resolve({}));
+
+    // Mock ID sequence generator
+    const IDSequence = require('../src/models/IDSequence');
+    jest.spyOn(IDSequence, 'findOneAndUpdate').mockImplementationOnce(() => Promise.resolve({ sequence: 1 }));
+
+    // Mock jwt generateTokens to avoid signing real tokens and trying to read real env vars
+    const jwtUtils = require('../src/utils/jwt');
+    jest.spyOn(jwtUtils, 'generateTokens').mockImplementationOnce(() => ({
+      accessToken: 'mockedToken',
+      refreshToken: 'mockedRefresh'
+    }));
+
+    const res = await request(app).post('/api/v1/auth/register').send({
+      phone: '9876543210',
+      password: 'password123',
+    });
+    expect(res.statusCode).toEqual(201);
+    expect(findSpy).toHaveBeenCalledWith({ $or: [{ phone: '9876543210' }, { mobile: '9876543210' }] });
+  });
+
+  it('should prevent registration if mobile/phone is missing', async () => {
+    const res = await request(app).post('/api/v1/auth/register').send({
+      password: 'password123'
+    });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual('Phone number is required');
   });
 });
