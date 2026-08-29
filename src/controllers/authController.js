@@ -10,7 +10,10 @@ const bcrypt = require('bcryptjs');
 
 const requestOtp = async (req, res, next) => {
   try {
-    const { mobile, email } = req.body;
+    let { mobile, email, phone, phoneNumber } = req.body;
+    mobile = phone || phoneNumber || mobile;
+    if (mobile) mobile = String(mobile).trim();
+
     if (!mobile && !email) {
       return errorResponse(res, 400, 'Mobile or email required');
     }
@@ -26,7 +29,9 @@ const requestOtp = async (req, res, next) => {
 
 const verifyOtpLogin = async (req, res, next) => {
   try {
-    const { mobile, email, otp } = req.body;
+    let { mobile, email, otp, phone, phoneNumber } = req.body;
+    mobile = phone || phoneNumber || mobile;
+    if (mobile) mobile = String(mobile).trim();
 
     let result;
     if (mobile) result = await verifyOTP(mobile, 'mobile', otp);
@@ -37,7 +42,7 @@ const verifyOtpLogin = async (req, res, next) => {
     }
 
     let user;
-    if (mobile) user = await User.findOne({ mobile }).populate('role');
+    if (mobile) user = await User.findOne({ $or: [{ phone: mobile }, { mobile }] }).populate('role');
     else if (email) user = await User.findOne({ email }).populate('role');
 
     if (!user) {
@@ -60,10 +65,12 @@ const verifyOtpLogin = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    const { mobile, email, roleName, firstName, lastName, password } = req.body;
+    let { mobile, email, roleName, firstName, lastName, password, phone, phoneNumber } = req.body;
+    mobile = phone || phoneNumber || mobile;
+    if (mobile) mobile = String(mobile).trim();
 
-    if (!mobile && !email) {
-      return errorResponse(res, 400, 'Mobile or email is required', 'VALIDATION_ERROR');
+    if (!mobile) {
+      return errorResponse(res, 400, 'Phone number is required', 'VALIDATION_ERROR');
     }
     if (!password) {
       return errorResponse(res, 400, 'Password is required', 'VALIDATION_ERROR');
@@ -87,7 +94,7 @@ const register = async (req, res, next) => {
     }
 
     let existingUser = null;
-    if (mobile) existingUser = await User.findOne({ mobile });
+    if (mobile) existingUser = await User.findOne({ $or: [{ phone: mobile }, { mobile }] });
     if (!existingUser && email) existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -98,6 +105,7 @@ const register = async (req, res, next) => {
 
     const user = await User.create({
       mobile,
+      phone: mobile,
       email,
       password: hashedPassword,
       role: role._id,
@@ -135,13 +143,15 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { mobile, email, password } = req.body;
+    let { mobile, email, password, phone, phoneNumber } = req.body;
+    mobile = phone || phoneNumber || mobile;
+    if (mobile) mobile = String(mobile).trim();
     if (!password) {
         return errorResponse(res, 400, 'Password is required', 'VALIDATION_ERROR');
     }
 
     let user;
-    if (mobile) user = await User.findOne({ mobile }).select('+password').populate('role');
+    if (mobile) user = await User.findOne({ $or: [{ phone: mobile }, { mobile }] }).select('+password').populate('role');
     else if (email) user = await User.findOne({ email }).select('+password').populate('role');
 
     if (!user) {
